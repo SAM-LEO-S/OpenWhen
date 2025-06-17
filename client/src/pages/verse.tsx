@@ -63,7 +63,7 @@ export default function Verse() {
   const config = emotionConfig[emotion as keyof typeof emotionConfig];
 
   const { data: verse, isLoading, error, refetch } = useQuery({
-    queryKey: ["/api/verses", emotion],
+    queryKey: ["/api/verses", emotion, Date.now()], // Add timestamp to force fresh data
     queryFn: () => {
       // Try offline first
       const cachedVerse = LocalStorage.getRandomCachedVerse(emotion);
@@ -76,17 +76,21 @@ export default function Verse() {
     },
     enabled: !!emotion && !!config,
     retry: false,
+    staleTime: 0, // Always consider data stale
+    gcTime: 0, // Don't cache results
   });
 
   const refreshMutation = useMutation({
     mutationFn: () => fetchVerseByEmotion(emotion),
     onSuccess: (newVerse) => {
-      queryClient.setQueryData(["/api/verses", emotion], newVerse);
+      queryClient.setQueryData(["/api/verses", emotion, Date.now()], newVerse);
       LocalStorage.addCachedVerse(emotion, newVerse);
       toast({
         title: "New verse loaded",
         description: "Here's another verse for you.",
       });
+      // Trigger a refetch to get the updated data
+      refetch();
     },
     onError: () => {
       // Try cached verse as fallback

@@ -225,7 +225,7 @@ export default function Verse() {
       )}
 
       {/* Error State */}
-      {error && !verse && (
+      {!isLoading && !verse && (
         <div className="text-center py-12 space-y-4">
           <AlertTriangle className="text-red-400 text-3xl mx-auto" size={48} />
           <h3 className="text-lg font-semibold text-gray-800 dark:text-cream-50">

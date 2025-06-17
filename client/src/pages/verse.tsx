@@ -1,5 +1,5 @@
 import { useParams, useLocation } from "wouter";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,8 @@ import { VerseCard } from "@/components/verse-card";
 import { fetchVerseByEmotion, shareVerse } from "@/lib/bible-api";
 import { LocalStorage } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
-import type { EmotionCategory } from "@shared/schema";
+import { useState, useEffect } from "react";
+import type { EmotionCategory, Verse } from "@shared/schema";
 
 const emotionConfig = {
   anxious: {
@@ -57,46 +58,74 @@ export default function Verse() {
   const params = useParams();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const emotion = params.emotion as EmotionCategory;
   
   const config = emotionConfig[emotion as keyof typeof emotionConfig];
 
-  const { data: verse, isLoading, error, refetch } = useQuery({
-    queryKey: ["/api/verses", emotion, Date.now()], // Add timestamp to force fresh data
-    queryFn: () => {
-      // Try offline first
-      const cachedVerse = LocalStorage.getRandomCachedVerse(emotion);
-      if (cachedVerse && !navigator.onLine) {
-        return Promise.resolve(cachedVerse);
-      }
+  const [currentVerse, setCurrentVerse] = useState<Verse | null>(null);
+  const [isLoadingVerse, setIsLoadingVerse] = useState(true);
+
+  // Load verse on component mount and emotion change
+  useEffect(() => {
+    if (!emotion || !config) return;
+
+    const loadVerse = async () => {
+      setIsLoadingVerse(true);
       
-      // Fetch from API
-      return fetchVerseByEmotion(emotion);
-    },
-    enabled: !!emotion && !!config,
-    retry: false,
-    staleTime: 0, // Always consider data stale
-    gcTime: 0, // Don't cache results
-  });
+      try {
+        // First try to get a cached verse for instant display
+        const cachedVerse = LocalStorage.getRandomCachedVerse(emotion);
+        if (cachedVerse) {
+          setCurrentVerse(cachedVerse);
+          setIsLoadingVerse(false);
+          
+          // Then fetch a fresh verse in the background if online
+          if (navigator.onLine) {
+            try {
+              const freshVerse = await fetchVerseByEmotion(emotion);
+              if (freshVerse && freshVerse.id !== cachedVerse.id) {
+                LocalStorage.addCachedVerse(emotion, freshVerse);
+                setCurrentVerse(freshVerse);
+              }
+            } catch (error) {
+              // Keep showing cached verse on error
+            }
+          }
+        } else {
+          // No cached verse, fetch from API
+          const freshVerse = await fetchVerseByEmotion(emotion);
+          LocalStorage.addCachedVerse(emotion, freshVerse);
+          setCurrentVerse(freshVerse);
+          setIsLoadingVerse(false);
+        }
+      } catch (error) {
+        setIsLoadingVerse(false);
+        // Handle error state
+      }
+    };
+
+    loadVerse();
+  }, [emotion, config]);
+
+  const verse = currentVerse;
+  const isLoading = isLoadingVerse;
+  const error = null;
 
   const refreshMutation = useMutation({
     mutationFn: () => fetchVerseByEmotion(emotion),
     onSuccess: (newVerse) => {
-      queryClient.setQueryData(["/api/verses", emotion, Date.now()], newVerse);
       LocalStorage.addCachedVerse(emotion, newVerse);
+      setCurrentVerse(newVerse);
       toast({
         title: "New verse loaded",
         description: "Here's another verse for you.",
       });
-      // Trigger a refetch to get the updated data
-      refetch();
     },
     onError: () => {
       // Try cached verse as fallback
       const cachedVerse = LocalStorage.getRandomCachedVerse(emotion);
       if (cachedVerse) {
-        queryClient.setQueryData(["/api/verses", emotion], cachedVerse);
+        setCurrentVerse(cachedVerse);
         toast({
           title: "Offline verse",
           description: "Showing a previously saved verse.",
@@ -137,7 +166,12 @@ export default function Verse() {
   };
 
   const handleRetry = () => {
-    refetch();
+    // Reload the verse by triggering the useEffect
+    if (emotion && config) {
+      setIsLoadingVerse(true);
+      setCurrentVerse(null);
+      // This will trigger the useEffect to reload
+    }
   };
 
   if (!config) {

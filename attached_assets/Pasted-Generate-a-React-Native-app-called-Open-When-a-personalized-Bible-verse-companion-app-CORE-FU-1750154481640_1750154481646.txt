@@ -1,0 +1,52 @@
+Generate a React Native app called "Open When" - a personalized Bible verse companion app. 
+
+CORE FUNCTIONALITY:
+- Home screen with beautiful emotion-based cards: "When you're anxious", "When you're happy", "When you're sad", "When you're grateful", "When you need strength", "When you're lonely", "When you need guidance", "When you're angry"
+- Special card: "When you feel anything and no one is there to listen" (with hidden phone number functionality)
+- Each card tap shows a random Bible verse with reference and personal encouraging message
+- Dark/Light theme toggle with theme persistence
+- Bible API integration using bible-api.com for dynamic verse fetching
+- Offline storage to cache previously viewed verses
+- Smooth animations and transitions between screens
+
+UI/UX REQUIREMENTS:
+- Orthodox Christian-inspired design with elegant typography
+- Soft, calming color palette for light mode
+- Deep, comfortable colors for dark mode
+- Card-based layout with subtle shadows and rounded corners
+- Readable fonts with proper spacing
+- Subtle religious iconography (crosses, peaceful symbols)
+- Loading states and error handling for API calls
+
+TECHNICAL SPECIFICATIONS:
+- Use React Native with Expo for easy deployment
+- Implement AsyncStorage for offline functionality and theme persistence
+- Fetch Bible verses from bible-api.com endpoint
+- Handle network connectivity states
+- Optimize for both Android and iOS platforms
+- Include proper error boundaries and loading indicators
+- Implement pull-to-refresh functionality
+
+DATA STRUCTURE:
+Each verse entry should include:
+- Category (emotional state)
+- Bible verse text (from API)
+- Scripture reference
+- Personal encouraging message
+- Theme colors (light/dark variants)
+
+EXPORT REQUIREMENTS:
+- Configure for Android APK generation via 'expo build:android'
+- Configure for iOS IPA generation via 'expo build:ios'
+- Include all necessary build configurations and app icons
+- Set up app.json with proper metadata for app store deployment
+
+SPECIAL FEATURES:
+- Random verse selection within each category
+- Smooth theme transitions
+- Offline-first approach with API fallback
+- Personal message overlay on verse display
+- Gentle haptic feedback on interactions
+- Share functionality for verses
+
+Please generate the complete app structure with all components, API integration, styling, and build configuration files.

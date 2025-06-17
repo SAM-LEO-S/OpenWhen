@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --background: hsl(45, 50%, 98%);
+  --foreground: hsl(220, 14%, 15%);
+  --muted: hsl(45, 25%, 95%);
+  --muted-foreground: hsl(220, 5%, 45%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(220, 14%, 15%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(220, 14%, 15%);
+  --border: hsl(45, 20%, 85%);
+  --input: hsl(45, 20%, 85%);
+  --primary: hsl(210, 60%, 65%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(45, 25%, 95%);
+  --secondary-foreground: hsl(220, 9%, 15%);
+  --accent: hsl(45, 25%, 95%);
+  --accent-foreground: hsl(220, 9%, 15%);
+  --destructive: hsl(0, 70%, 60%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(220, 14%, 15%);
+  --radius: 0.75rem;
+  
+  /* Custom Orthodox Christian colors */
+  --cream-50: hsl(45, 100%, 99%);
+  --cream-100: hsl(45, 40%, 96%);
+  --cream-200: hsl(45, 30%, 92%);
+  --cream-300: hsl(45, 25%, 88%);
+  --gold-400: hsl(45, 75%, 55%);
+  --gold-500: hsl(45, 85%, 65%);
+  --peaceful-400: hsl(210, 40%, 65%);
+  --peaceful-500: hsl(210, 45%, 60%);
+}
+
+.dark {
+  --background: hsl(220, 40%, 8%);
+  --foreground: hsl(45, 50%, 95%);
+  --muted: hsl(220, 15%, 15%);
+  --muted-foreground: hsl(220, 5%, 65%);
+  --popover: hsl(220, 35%, 10%);
+  --popover-foreground: hsl(45, 50%, 95%);
+  --card: hsl(220, 35%, 10%);
+  --card-foreground: hsl(45, 50%, 95%);
+  --border: hsl(220, 15%, 25%);
+  --input: hsl(220, 15%, 25%);
+  --primary: hsl(210, 60%, 65%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(220, 15%, 15%);
+  --secondary-foreground: hsl(45, 50%, 95%);
+  --accent: hsl(220, 15%, 15%);
+  --accent-foreground: hsl(45, 50%, 95%);
+  --destructive: hsl(0, 60%, 50%);
+  --destructive-foreground: hsl(45, 50%, 95%);
+  --ring: hsl(220, 5%, 65%);
+  
+  /* Custom dark mode colors */
+  --cream-50: hsl(45, 50%, 95%);
+  --cream-100: hsl(45, 30%, 85%);
+  --cream-200: hsl(45, 20%, 75%);
+  --cream-300: hsl(45, 15%, 65%);
+  --gold-400: hsl(45, 75%, 55%);
+  --gold-500: hsl(45, 85%, 65%);
+  --peaceful-400: hsl(210, 40%, 65%);
+  --peaceful-500: hsl(210, 45%, 60%);
+  --deep-800: hsl(220, 40%, 12%);
+  --deep-900: hsl(220, 45%, 8%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  .font-serif {
+    font-family: 'Crimson Text', serif;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  .animate-pulse-gentle {
+    animation: pulseGentle 2s infinite;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideUp {
+    from { 
+      transform: translateY(20px); 
+      opacity: 0; 
+    }
+    to { 
+      transform: translateY(0); 
+      opacity: 1; 
+    }
+  }
+  
+  @keyframes pulseGentle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+  
+  .text-cream-50 { color: var(--cream-50); }
+  .text-cream-100 { color: var(--cream-100); }
+  .text-cream-200 { color: var(--cream-200); }
+  .text-cream-300 { color: var(--cream-300); }
+  .text-gold-400 { color: var(--gold-400); }
+  .text-gold-500 { color: var(--gold-500); }
+  .text-peaceful-400 { color: var(--peaceful-400); }
+  .text-peaceful-500 { color: var(--peaceful-500); }
+  
+  .bg-cream-50 { background-color: var(--cream-50); }
+  .bg-cream-100 { background-color: var(--cream-100); }
+  .bg-cream-200 { background-color: var(--cream-200); }
+  .bg-cream-300 { background-color: var(--cream-300); }
+  .bg-gold-400 { background-color: var(--gold-400); }
+  .bg-gold-500 { background-color: var(--gold-500); }
+  .bg-peaceful-400 { background-color: var(--peaceful-400); }
+  .bg-peaceful-500 { background-color: var(--peaceful-500); }
+  .bg-deep-800 { background-color: var(--deep-800); }
+  .bg-deep-900 { background-color: var(--deep-900); }
+  
+  .border-cream-200 { border-color: var(--cream-200); }
+  .border-gold-200 { border-color: var(--gold-400); }
+  .border-gold-700 { border-color: var(--gold-400); }
+  
+  .hover\:bg-cream-300:hover { background-color: var(--cream-300); }
+  .hover\:bg-gold-500:hover { background-color: var(--gold-500); }
+  .hover\:bg-peaceful-500:hover { background-color: var(--peaceful-500); }
+  .hover\:text-gold-300:hover { color: var(--gold-500); }
+  .hover\:text-peaceful-600:hover { color: var(--peaceful-500); }
+  
+  .from-gold-400 { --tw-gradient-from: var(--gold-400); }
+  .to-peaceful-400 { --tw-gradient-to: var(--peaceful-400); }
+  .from-cream-100 { --tw-gradient-from: var(--cream-100); }
+  .to-cream-200 { --tw-gradient-to: var(--cream-200); }
+  .from-deep-800 { --tw-gradient-from: var(--deep-800); }
+  .to-deep-900 { --tw-gradient-to: var(--deep-900); }
+}

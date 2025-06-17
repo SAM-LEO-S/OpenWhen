@@ -128,8 +128,8 @@ export class MemStorage implements IStorage {
 
   async updateUserPreferences(insertPreferences: InsertUserPreferences): Promise<UserPreferences> {
     const preferences: UserPreferences = {
-      ...insertPreferences,
       id: this.preferences?.id || this.currentPreferenceId++,
+      theme: insertPreferences.theme || "light",
       lastUpdated: new Date()
     };
     this.preferences = preferences;

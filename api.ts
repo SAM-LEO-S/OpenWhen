@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { Verse, EmotionCategory } from './types';
 
-// Update this URL to your server's IP address when testing on device
-const API_BASE_URL = 'http://localhost:5000';
+// Production API URL - deployed on Render
+const API_BASE_URL = 'https://open-when.onrender.com';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

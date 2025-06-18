@@ -64,8 +64,18 @@ app.use((req, res, next) => {
     const { setupVite } = await import("./vite");
     await setupVite(app, server);
   } else {
-    const { serveStatic } = await import("./vite");
-    serveStatic(app);
+    // In production, only serve API routes
+    // The client will be served separately (web app) or via mobile app
+    app.use("*", (req, res) => {
+      if (req.path.startsWith("/api")) {
+        res.status(404).json({ message: "API endpoint not found" });
+      } else {
+        res.status(404).json({ 
+          message: "Not found", 
+          note: "This is the API server. The web client is served separately." 
+        });
+      }
+    });
   }
 
   // Use environment variable for port, fallback to 5000

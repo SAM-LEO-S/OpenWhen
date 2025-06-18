@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "NODE_ENV=development tsx server/index.ts",
-    "build": "esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
+    "build": "npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "node dist/index.js",
     "check": "tsc",
     "db:push": "drizzle-kit push",
@@ -100,8 +100,8 @@
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.1.0",
     "react-native-vector-icons": "^10.0.3",
-    "@replit/vite-plugin-runtime-error-modal": "^0.0.1",
-    "@replit/vite-plugin-cartographer": "^0.0.1"
+    "@replit/vite-plugin-runtime-error-modal": "^0.0.3",
+    "@replit/vite-plugin-cartographer": "^0.2.7"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",

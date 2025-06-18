@@ -31,7 +31,8 @@ export default function Home() {
     if (emotion === "anything") {
       setLocation("/special-verse");
     } else {
-      setLocation(`/verse/${emotion}`);
+      const timestamp = Date.now();
+      setLocation(`/verse/${emotion}?t=${timestamp}`);
     }
   };
 
@@ -102,7 +103,7 @@ export default function Home() {
       {/* Footer */}
       <div className="text-center py-4 space-y-2">
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          Verses powered by Bible API
+          Matthew 19:6
         </p>
         <div className="flex items-center justify-center space-x-2 text-xs text-gray-400 dark:text-gray-500">
           {isOnline ? (

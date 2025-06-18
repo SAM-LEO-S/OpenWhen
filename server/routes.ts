@@ -17,6 +17,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Invalid emotion category" });
       }
 
+      // Set cache-busting headers to prevent 304 responses
+      res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'Last-Modified': new Date().toUTCString()
+      });
+
       // First try to get from local storage
       let verse = await storage.getRandomVerseByEmotion(emotion);
       

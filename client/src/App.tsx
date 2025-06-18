@@ -12,6 +12,7 @@ import Verse from "@/pages/verse";
 import SpecialVerse from "@/pages/special-verse";
 import NotFound from "@/pages/not-found";
 
+
 function Header() {
   const { theme, toggleTheme } = useTheme();
 
@@ -45,12 +46,24 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/verse/:emotion" component={Verse} />
+
+      <Route path="/verse/:emotion">
+        {(match) => {
+          if (!match) return null;
+          // Extract timestamp from query parameter to force fresh loads
+          const urlParams = new URLSearchParams(window.location.search);
+          const timestamp = urlParams.get('t');
+          const key = timestamp ? `${match.emotion}-${timestamp}` : match.emotion;
+          return <Verse key={key} />;
+        }}
+      </Route>
+
       <Route path="/special-verse" component={SpecialVerse} />
       <Route component={NotFound} />
     </Switch>
   );
 }
+
 
 function App() {
   return (

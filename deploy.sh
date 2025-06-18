@@ -1,0 +1,40 @@
+#!/bin/bash
+
+echo "🚀 OpenWhenVerse Backend Deployment Helper"
+echo "=========================================="
+
+echo ""
+echo "📋 Prerequisites:"
+echo "1. GitHub repository with your code"
+echo "2. Render.com account (free)"
+echo ""
+
+echo "🔧 Steps to deploy:"
+echo "1. Go to https://render.com"
+echo "2. Sign up with GitHub"
+echo "3. Click 'New +' → 'Web Service'"
+echo "4. Connect your GitHub repo"
+echo "5. Configure:"
+echo "   - Name: openwhenverse-api"
+echo "   - Environment: Node"
+echo "   - Build Command: npm install && npm run build"
+echo "   - Start Command: npm start"
+echo "6. Add Environment Variables:"
+echo "   - NODE_ENV = production"
+echo "   - PORT = 10000"
+echo "7. Click 'Create Web Service'"
+echo ""
+
+echo "📱 After deployment:"
+echo "1. Copy your Render URL (e.g., https://your-app.onrender.com)"
+echo "2. Update OpenWhenVerseMobile/api.ts with the new URL"
+echo "3. Test with: npx expo start"
+echo ""
+
+echo "🎯 Your girlfriend can then:"
+echo "1. Install Expo Go from App Store/Play Store"
+echo "2. Scan your QR code"
+echo "3. Use the app from anywhere!"
+echo ""
+
+echo "✅ Done! Your app will work globally!" 

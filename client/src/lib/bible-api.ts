@@ -2,7 +2,8 @@ import { apiRequest } from "./queryClient";
 import type { Verse, EmotionCategory } from "@shared/schema";
 
 export async function fetchVerseByEmotion(emotion: EmotionCategory): Promise<Verse> {
-  const response = await apiRequest("GET", `/api/verses/${emotion}`);
+  const timestamp = Date.now();
+  const response = await apiRequest("GET", `/api/verses/${emotion}?t=${timestamp}`);
   return response.json();
 }
 

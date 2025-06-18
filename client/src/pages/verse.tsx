@@ -64,71 +64,95 @@ export default function Verse() {
 
   const [currentVerse, setCurrentVerse] = useState<Verse | null>(null);
   const [isLoadingVerse, setIsLoadingVerse] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
-  // Load verse on component mount and emotion change
+  // --- Load verse on component mount and emotion change ---
   useEffect(() => {
-    if (!emotion || !config) return;
+    if (!emotion || !config) {
+      setHasError(true);
+      setIsLoadingVerse(false);
+      return;
+    }
 
     const loadVerse = async () => {
       setIsLoadingVerse(true);
-      
+      setHasError(false);
+      setCurrentVerse(null);
+
       try {
-        // First try to get a cached verse for instant display
+        // Always try to fetch a fresh verse first
+        const freshVerse = await fetchVerseByEmotion(emotion);
+        if (freshVerse) {
+          LocalStorage.addCachedVerse(emotion, freshVerse);
+          setCurrentVerse(freshVerse);
+        } else {
+          // If API returns null, try cached verse
+          const cachedVerse = LocalStorage.getRandomCachedVerse(emotion);
+          if (cachedVerse) {
+            setCurrentVerse(cachedVerse);
+            toast({
+              title: "Cached verse",
+              description: "Showing a previously saved verse.",
+            });
+          } else {
+            setHasError(true);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading verse:", error);
+        // Try cached verse as fallback
         const cachedVerse = LocalStorage.getRandomCachedVerse(emotion);
         if (cachedVerse) {
           setCurrentVerse(cachedVerse);
-          setIsLoadingVerse(false);
-          
-          // Then fetch a fresh verse in the background if online
-          if (navigator.onLine) {
-            try {
-              const freshVerse = await fetchVerseByEmotion(emotion);
-              if (freshVerse && freshVerse.id !== cachedVerse.id) {
-                LocalStorage.addCachedVerse(emotion, freshVerse);
-                setCurrentVerse(freshVerse);
-              }
-            } catch (error) {
-              // Keep showing cached verse on error
-            }
-          }
+          toast({
+            title: "Offline verse",
+            description: "Showing a previously saved verse due to connection issues.",
+          });
         } else {
-          // No cached verse, fetch from API
-          const freshVerse = await fetchVerseByEmotion(emotion);
-          LocalStorage.addCachedVerse(emotion, freshVerse);
-          setCurrentVerse(freshVerse);
-          setIsLoadingVerse(false);
+          setHasError(true);
         }
-      } catch (error) {
+      } finally {
         setIsLoadingVerse(false);
-        // Handle error state
       }
     };
 
     loadVerse();
-  }, [emotion, config]);
+  }, [emotion, config, toast]);
 
   const verse = currentVerse;
   const isLoading = isLoadingVerse;
-  const error = null;
 
+  // --- useMutation for Refreshing Verse ---
   const refreshMutation = useMutation({
     mutationFn: () => fetchVerseByEmotion(emotion),
     onSuccess: (newVerse) => {
-      LocalStorage.addCachedVerse(emotion, newVerse);
-      setCurrentVerse(newVerse);
-      toast({
-        title: "New verse loaded",
-        description: "Here's another verse for you.",
-      });
+      if (newVerse) {
+        LocalStorage.addCachedVerse(emotion, newVerse);
+        setCurrentVerse(newVerse);
+        setIsLoadingVerse(false);
+        toast({
+          title: "New verse loaded",
+          description: "Here's another verse for you.",
+        });
+      } else {
+        setIsLoadingVerse(false);
+        toast({
+          title: "Could not get a new verse",
+          description: "The API did not return a valid verse.",
+          variant: "destructive",
+        });
+      }
     },
-    onError: () => {
-      // Try cached verse as fallback
+    onError: (error) => {
+      console.error("Refresh mutation failed:", error);
+      setIsLoadingVerse(false);
+      // Try cached verse as fallback only if API failed
       const cachedVerse = LocalStorage.getRandomCachedVerse(emotion);
       if (cachedVerse) {
         setCurrentVerse(cachedVerse);
         toast({
           title: "Offline verse",
-          description: "Showing a previously saved verse.",
+          description: "Showing a previously saved verse. Please check your connection.",
         });
       } else {
         toast({
@@ -158,6 +182,10 @@ export default function Verse() {
   };
 
   const handleRefresh = () => {
+    // Clear current verse to show loading state
+    setCurrentVerse(null);
+    setIsLoadingVerse(true);
+    // Force a fresh API call
     refreshMutation.mutate();
   };
 
@@ -166,14 +194,13 @@ export default function Verse() {
   };
 
   const handleRetry = () => {
-    // Reload the verse by triggering the useEffect
-    if (emotion && config) {
-      setIsLoadingVerse(true);
-      setCurrentVerse(null);
-      // This will trigger the useEffect to reload
-    }
+    // Reset states to trigger a fresh load
+    setIsLoadingVerse(true);
+    setHasError(false);
+    setCurrentVerse(null);
   };
 
+  // --- Render Logic ---
   if (!config) {
     return (
       <div className="max-w-md mx-auto px-4 py-6">
@@ -225,7 +252,7 @@ export default function Verse() {
       )}
 
       {/* Error State */}
-      {!isLoading && !verse && (
+      {!isLoading && hasError && !verse && (
         <div className="text-center py-12 space-y-4">
           <AlertTriangle className="text-red-400 text-3xl mx-auto" size={48} />
           <h3 className="text-lg font-semibold text-gray-800 dark:text-cream-50">

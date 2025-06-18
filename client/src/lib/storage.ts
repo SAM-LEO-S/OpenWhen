@@ -10,11 +10,42 @@ export class LocalStorage {
   static getCachedVerses(): Record<EmotionCategory, Verse[]> {
     try {
       const cached = localStorage.getItem(STORAGE_KEYS.CACHED_VERSES);
-      return cached ? JSON.parse(cached) : {};
+      const parsed = cached ? JSON.parse(cached) : {};
+
+      const allEmotions: EmotionCategory[] = [
+        "anxious",
+        "happy",
+        "sad",
+        "grateful",
+        "strength",
+        "lonely",
+        "guidance",
+        "angry",
+        "anything",
+      ];
+
+      const complete: Record<EmotionCategory, Verse[]> = {} as Record<EmotionCategory, Verse[]>;
+
+      for (const emotion of allEmotions) {
+        complete[emotion] = parsed[emotion] || [];
+      }
+
+      return complete;
     } catch {
-      return {};
+      return {
+        anxious: [],
+        happy: [],
+        sad: [],
+        grateful: [],
+        strength: [],
+        lonely: [],
+        guidance: [],
+        angry: [],
+        anything: [],
+      };
     }
   }
+
 
   static setCachedVerses(verses: Record<EmotionCategory, Verse[]>) {
     try {
@@ -29,7 +60,7 @@ export class LocalStorage {
     if (!cached[emotion]) {
       cached[emotion] = [];
     }
-    
+
     // Avoid duplicates
     const exists = cached[emotion].some(v => v.id === verse.id);
     if (!exists) {
@@ -41,9 +72,9 @@ export class LocalStorage {
   static getRandomCachedVerse(emotion: EmotionCategory): Verse | null {
     const cached = this.getCachedVerses();
     const verses = cached[emotion] || [];
-    
+
     if (verses.length === 0) return null;
-    
+
     const randomIndex = Math.floor(Math.random() * verses.length);
     return verses[randomIndex];
   }
